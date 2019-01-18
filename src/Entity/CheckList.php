@@ -28,7 +28,7 @@ class CheckList implements \JsonSerializable
     /**
      * @Assert\NotBlank()
      * @Assert\Length(min="3", max="15" )
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $name;
 
@@ -38,13 +38,20 @@ class CheckList implements \JsonSerializable
     private $items;
 
     /**
+     * @Assert\Date()
      * @ORM\Column(type="string")
      */
     private $expire;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Label", mappedBy="checklists")
+     */
+    private $labels;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
+        $this->labels = new ArrayCollection();
     }
 
 
@@ -126,6 +133,34 @@ class CheckList implements \JsonSerializable
     public function setExpire(string $expire): self
     {
         $this->expire = $expire;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Label[]
+     */
+    public function getLabels(): Collection
+    {
+        return $this->labels;
+    }
+
+    public function addLabel(Label $label): self
+    {
+        if (!$this->labels->contains($label)) {
+            $this->labels[] = $label;
+            $label->addChecklist($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLabel(Label $label): self
+    {
+        if ($this->labels->contains($label)) {
+            $this->labels->removeElement($label);
+            $label->removeChecklist($this);
+        }
 
         return $this;
     }

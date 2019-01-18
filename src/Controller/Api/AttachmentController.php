@@ -40,7 +40,7 @@ class AttachmentController extends AbstractController
                 $em->persist($item);
                 $em->flush();
 
-                return ($this->json($user));
+                return ($this->json($item));
             }}
 
         throw new JsonHttpException(400, 'Bad Request');

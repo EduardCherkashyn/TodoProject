@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class CheckListController extends AbstractController
 {
     /**
-     * @Route("/api/list", methods={"POST"})
+     * @Route("/api/checklist", methods={"POST"})
      */
     public function createAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
     {
@@ -41,7 +41,7 @@ class CheckListController extends AbstractController
     }
 
     /**
-     * @Route("/api/list/{id}", methods={"DELETE"})
+     * @Route("/api/checklist/{id}", methods={"DELETE"})
      */
     public function deleteAction(CheckList $checkList)
     {
@@ -52,16 +52,16 @@ class CheckListController extends AbstractController
             $em->remove($checkList);
             $em->flush();
 
-            return ($this->json($user));
+            return ($this->json($checkList));
         }
 
         throw new JsonHttpException(400, 'Bad Request');
     }
 
     /**
-     * @Route("/api/list/{id}", methods={"PUT"})
+     * @Route("/api/checklist/{id}", methods={"PUT"})
      */
-    public function editNameAction(CheckList $checkList, Request $request)
+    public function editNameAction(CheckList $checkList, Request $request,ValidatorInterface $validator)
     {
         if (!$content = $request->getContent()) {
             throw new JsonHttpException(400, 'Bad Request');
@@ -71,6 +71,12 @@ class CheckListController extends AbstractController
         if(isset($checkList, $userLists)){
             $data = json_decode($content,true);
             $checkList->setName($data['name']);
+            $checkList->setExpire($data['expire']);
+            $errors = $validator->validate($checkList);
+            if (count($errors)) {
+                throw new JsonHttpException(400, 'Bad Request');
+            }
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($checkList);
             $em->flush();

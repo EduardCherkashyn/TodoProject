@@ -31,11 +31,11 @@ class UserController extends AbstractController
         }
         /** @var User $user */
         $user = $serializer->deserialize($request->getContent(),User::class,'json');
-        $passwordEncoder->index($user);
         $errors = $validator->validate($user);
         if (count($errors)) {
             throw new JsonHttpException(400, 'Bad Request');
         }
+        $passwordEncoder->index($user);
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
         $em->flush();

@@ -28,7 +28,6 @@ class ItemController extends AbstractController
         if (!$content = $request->getContent()) {
             throw new JsonHttpException(400, 'Bad Request');
         }
-        $user = $this->getUser();
         $item = $serializer->deserialize($request->getContent(),Item::class,'json');
         $errors = $validator->validate($item);
         if (count($errors)) {
@@ -36,10 +35,10 @@ class ItemController extends AbstractController
         }
         $checkList->addItem($item);
         $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
+        $em->persist($checkList);
         $em->flush();
 
-        return ($this->json($user));
+        return ($this->json($item));
     }
 
     /**
@@ -56,11 +55,9 @@ class ItemController extends AbstractController
                 $em->remove($item);
                 $em->flush();
 
-            return ($this->json($user));
+            return ($this->json(null,200));
         }}
-
         throw new JsonHttpException(400, 'Bad Request');
-
     }
 
     /**
@@ -72,7 +69,7 @@ class ItemController extends AbstractController
         $userLists = $user->getCheckLists();
         if(isset($checkList, $userLists)){
             $items = $checkList->getItems();
-            if(isset($item, $items)){
+            if($items->contains($item)){
                 if($item->getChecked()){
                     $item->setChecked(false);
                 }
@@ -83,7 +80,7 @@ class ItemController extends AbstractController
                 $em->persist($item);
                 $em->flush();
 
-                return ($this->json($user));
+                return ($this->json($item));
             }}
 
         throw new JsonHttpException(400, 'Bad Request');

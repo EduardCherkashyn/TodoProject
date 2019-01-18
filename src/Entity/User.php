@@ -34,6 +34,7 @@ class User implements UserInterface,\JsonSerializable
 
     /**
      * @Assert\NotBlank()
+     * @Assert\Length(min="6", max="10")
      * @var string The hashed password
      * @ORM\Column(type="string")
      */

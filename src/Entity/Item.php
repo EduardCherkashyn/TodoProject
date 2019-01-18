@@ -65,7 +65,9 @@ class Item implements \JsonSerializable
         return [
             'id' => $this->getId(),
             'checked' => $this->getChecked(),
-            'attachment' => $this->getAttachment()
+            'attachment' => $this->getAttachment(),
+            'checkList' => $this->getCheckList()->getId(),
+            'user' => $this->getCheckList()->getUser()->getId()
         ];
     }
 
