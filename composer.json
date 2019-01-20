@@ -15,6 +15,7 @@
         "symfony/orm-pack": "*",
         "symfony/security-bundle": "4.2.*",
         "symfony/serializer": "4.2.*",
+        "symfony/swiftmailer-bundle": "^3.2",
         "symfony/validator": "4.2.*",
         "symfony/yaml": "4.2.*"
     },

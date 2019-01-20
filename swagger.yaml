@@ -1,0 +1,277 @@
+swagger: "2.0"
+
+info:
+  version: 1.0.0
+  title: Todo List Api
+  description: Todo List Api
+
+schemes:
+  - https
+host: 127.0.0.1:8000  
+
+
+paths:
+  /registration:
+    post:
+      summary: register new user
+      description: Returns a new user.
+      responses:
+        200:
+          description: User created
+          schema:
+            type: array
+            items:
+              required:
+                - username
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+  /login:
+    post:
+      summary: login user
+      description: Returns a user.
+      responses:
+        200:
+          description: User logged in
+          schema:
+            type: array
+            items:
+              required:
+                - username
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+  /api/checklist:
+     post:
+      summary: create new list
+      description: Returns a new checklist
+      responses:
+        200:
+          description: Checklist created
+          schema:
+            type: array
+            items:
+              required:
+                - username
+              properties:
+                name:
+                  type: string
+                expire:
+                  type: string
+  /api/checklist/{checklistId}:
+    put:
+      summary: update list
+      description: Returns a checklist
+      parameters:
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+      responses:
+        200:
+          description: Checklist updated
+          schema:
+            type: array
+            items:
+              required:
+                - username
+              properties:
+                name:
+                  type: string
+                expire:
+                  type: string
+    delete:
+      summary: delete list
+      description: Returns ann empty checklist
+      parameters:
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+      responses: 
+        200:
+          description: Checklist ddeleted
+  /api/list/{checklistId}/item:
+    post:
+      summary: create new item in a current checklist
+      description: Returns a new item
+      parameters:
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+      responses:
+        200:
+          description: Item created
+          schema:
+            type: array
+            items:
+              required:
+                - username
+              properties:
+                checked:
+                  type: boolean
+  /api/list/{checklistId}/item/{itemId}:
+    put:
+      summary: update item
+      description: Returns an updated item
+      parameters:
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+        - name: itemId
+          in: path
+          required: true
+          description: item id
+          type: string 
+      responses:
+        200:
+          description: Item updated
+    delete:
+      summary: delete list
+      description: Returns ann empty checklist
+      parameters:
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+        - name: itemId
+          in: path
+          required: true
+          description: item id
+          type: string   
+      responses: 
+        200:
+          description: Item deleted
+  /api/list/{checklistId}/item/{itemId}/attachment:     
+    post:
+      summary: create new aattachment in a current item
+      description: Returns a new aattachment
+      parameters:
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+        - name: itemId
+          in: path
+          required: true
+          description: item id
+          type: string   
+      responses:
+        200:
+          description: AAttachment created
+          schema:
+            type: array
+            items:
+              required:
+                - username
+              properties:
+               text:
+                  type: string        
+  /api/list/{checklistId}/item/{itemId}/attachment/{id}:     
+    delete:
+      summary: delete an aattachment from a current item
+      parameters:
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+        - name: itemId
+          in: path
+          required: true
+          description: item id
+          type: string 
+        - name: id
+          in: path
+          required: true
+          description: aattachment id
+          type: string     
+      responses:
+        200:
+          description: AAttachment deleted
+  /api/label:
+    post:
+       summary: create label for current user
+       description: Returns a new label
+       responses:
+        200:
+          description: label created
+          schema:
+            type: array
+            items:
+              required:
+                - username
+              properties:
+               name:
+                  type: string        
+  /api/label/{id}:
+    put:
+      summary: update label (only admin)
+      description: Returns an updated label
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: label id
+          type: string
+      responses:
+        200:
+          description: Item updated
+    delete:
+      summary: delete label (only admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: label id
+          type: string
+      responses: 
+        200:
+          description: label deleted
+  /api/label/{labelId}/checklist/{checklistId}:
+    post:
+      summary: add label to list
+      description: Returns an updated label
+      parameters:
+        - name: labelId
+          in: path
+          required: true
+          description: label id
+          type: string
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+      responses:
+        200:
+          description: label updated
+    delete:
+      summary: delete laabel from checklist
+      parameters:
+        - name: labelId
+          in: path
+          required: true
+          description: label id
+          type: string
+        - name: checklistId
+          in: path
+          required: true
+          description: checklist id
+          type: string
+      responses: 
+        200:
+          description: label deleted
+  
