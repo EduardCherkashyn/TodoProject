@@ -30,10 +30,7 @@ class PasswordEncoder
     public function index(User $user)
     {
         $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
-        try {
-            $uuid = Uuid::uuid4();
-        } catch (\Exception $e) {
-        }
+        $uuid = Uuid::uuid4();
         $user->setApiToken($uuid->toString());
     }
 }
