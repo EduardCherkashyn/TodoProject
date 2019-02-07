@@ -8,7 +8,6 @@
 
 namespace App\Controller\Api;
 
-
 use App\Entity\User;
 use App\Exception\JsonHttpException;
 use App\Services\PasswordEncoder;
@@ -30,7 +29,7 @@ class UserController extends AbstractController
             throw new JsonHttpException(400, 'Bad Request');
         }
         /** @var User $user */
-        $user = $serializer->deserialize($request->getContent(),User::class,'json');
+        $user = $serializer->deserialize($request->getContent(), User::class, 'json');
         $errors = $validator->validate($user);
         if (count($errors)) {
             throw new JsonHttpException(400, 'Bad Request');
@@ -53,10 +52,11 @@ class UserController extends AbstractController
         }
         $data = json_decode($content, true);
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email'=>$data['email']]);
-        if($user instanceof User) {
-            if($passwordEncoder->isPasswordValid($user,$data['password'])){
+        if ($user instanceof User) {
+            if ($passwordEncoder->isPasswordValid($user, $data['password'])) {
                 return ($this->json($user));
-            }}
+            }
+        }
         throw new JsonHttpException(400, 'Bad Request');
     }
 }

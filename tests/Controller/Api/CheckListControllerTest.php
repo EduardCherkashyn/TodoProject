@@ -8,7 +8,6 @@
 
 namespace App\Tests\Controller\Api;
 
-
 use App\Entity\CheckList;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -39,7 +38,9 @@ class CheckListControllerTest extends WebTestCase
             'name' => 'My List',
             'expire' => '2019-11-19'
         ];
-        $client->request('POST', '/api/checklist',
+        $client->request(
+            'POST',
+            '/api/checklist',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -48,7 +49,6 @@ class CheckListControllerTest extends WebTestCase
             json_encode($data)
         );
         $this->assertContains($data['name'], $client->getResponse()->getContent());
-
     }
 
     public function testEditAction()
@@ -59,7 +59,9 @@ class CheckListControllerTest extends WebTestCase
             'name' => 'My List New',
             'expire' => '2020-01-19'
         ];
-        $client->request('PUT', '/api/checklist/'.$listId,
+        $client->request(
+            'PUT',
+            '/api/checklist/'.$listId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -68,21 +70,21 @@ class CheckListControllerTest extends WebTestCase
             json_encode($data)
         );
         $this->assertContains($data['name'], $client->getResponse()->getContent());
-
     }
 
     public function testDeleteAction()
     {
         $listId = $this->entityManager->getRepository(CheckList::class)->findOneBy(['name' => 'My List New'])->getId();
         $client = static::createClient();
-        $client->request('DELETE', '/api/checklist/'.$listId,
+        $client->request(
+            'DELETE',
+            '/api/checklist/'.$listId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
                 'HTTP_X-API_KEY' => 'my-api-token'
             ]
         );
-        $this->assertEquals(200,$client->getResponse()->getStatusCode());
-
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }

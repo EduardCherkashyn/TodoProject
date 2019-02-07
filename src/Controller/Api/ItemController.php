@@ -8,7 +8,6 @@
 
 namespace App\Controller\Api;
 
-
 use App\Entity\CheckList;
 use App\Entity\Item;
 use App\Exception\JsonHttpException;
@@ -23,12 +22,12 @@ class ItemController extends AbstractController
     /**
      * @Route("/api/list/{id}/item", methods={"POST"})
      */
-    public function addAction(Request $request, SerializerInterface $serializer,ValidatorInterface $validator, CheckList $checkList)
+    public function addAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, CheckList $checkList)
     {
         if (!$content = $request->getContent()) {
             throw new JsonHttpException(400, 'Bad Request');
         }
-        $item = $serializer->deserialize($request->getContent(),Item::class,'json');
+        $item = $serializer->deserialize($request->getContent(), Item::class, 'json');
         $errors = $validator->validate($item);
         if (count($errors)) {
             throw new JsonHttpException(400, 'Bad Request');
@@ -48,15 +47,16 @@ class ItemController extends AbstractController
     {
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if(isset($checkList, $userLists)){
+        if (isset($checkList, $userLists)) {
             $items = $checkList->getItems();
-            if(isset($item, $items)){
+            if (isset($item, $items)) {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($item);
                 $em->flush();
 
-            return ($this->json(null,200));
-        }}
+                return ($this->json(null, 200));
+            }
+        }
         throw new JsonHttpException(400, 'Bad Request');
     }
 
@@ -67,13 +67,12 @@ class ItemController extends AbstractController
     {
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if(isset($checkList, $userLists)){
+        if (isset($checkList, $userLists)) {
             $items = $checkList->getItems();
-            if($items->contains($item)){
-                if($item->getChecked()){
+            if ($items->contains($item)) {
+                if ($item->getChecked()) {
                     $item->setChecked(false);
-                }
-                else{
+                } else {
                     $item->setChecked(true);
                 }
                 $em = $this->getDoctrine()->getManager();
@@ -81,9 +80,9 @@ class ItemController extends AbstractController
                 $em->flush();
 
                 return ($this->json($item));
-            }}
+            }
+        }
 
         throw new JsonHttpException(400, 'Bad Request');
-
     }
 }

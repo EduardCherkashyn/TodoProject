@@ -27,7 +27,7 @@ class CheckListController extends AbstractController
             throw new JsonHttpException(400, 'Bad Request');
         }
         $user = $this->getUser();
-        $checklist = $serializer->deserialize($content,CheckList::class,'json');
+        $checklist = $serializer->deserialize($content, CheckList::class, 'json');
         $errors = $validator->validate($checklist);
         if (count($errors)) {
             throw new JsonHttpException(400, 'Bad Request');
@@ -47,7 +47,7 @@ class CheckListController extends AbstractController
     {
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if(isset($checkList, $userLists)){
+        if (isset($checkList, $userLists)) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($checkList);
             $em->flush();
@@ -68,8 +68,8 @@ class CheckListController extends AbstractController
         }
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if(isset($checkList, $userLists)){
-            $data = json_decode($content,true);
+        if (isset($checkList, $userLists)) {
+            $data = json_decode($content, true);
             $checkList->setName($data['name']);
             $checkList->setExpire($data['expire']);
             $errors = $validator->validate($checkList);

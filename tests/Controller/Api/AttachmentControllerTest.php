@@ -38,7 +38,9 @@ class AttachmentControllerTest extends WebTestCase
         $data = [
             'text' => 'My Text',
         ];
-        $client->request('POST', '/api/list/'.$list->getId().'/item/'.$item->getId().'/attachment',
+        $client->request(
+            'POST',
+            '/api/list/'.$list->getId().'/item/'.$item->getId().'/attachment',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -47,7 +49,6 @@ class AttachmentControllerTest extends WebTestCase
             json_encode($data)
         );
         $this->assertContains($data['text'], $client->getResponse()->getContent());
-
     }
 
     public function testRemoveAction()
@@ -56,7 +57,9 @@ class AttachmentControllerTest extends WebTestCase
         $item = $list->getItems()->last();
         $attachment = $item->getAttachment();
         $client = static::createClient();
-        $client->request('DELETE', '/api/list/'.$list->getId().'/item/'.$item->getId().'/attachment/'.$attachment->getId(),
+        $client->request(
+            'DELETE',
+            '/api/list/'.$list->getId().'/item/'.$item->getId().'/attachment/'.$attachment->getId(),
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -64,6 +67,5 @@ class AttachmentControllerTest extends WebTestCase
             ]
         );
         $this->assertContains('email@gmail.com', $client->getResponse()->getContent());
-
     }
 }

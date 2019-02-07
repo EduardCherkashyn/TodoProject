@@ -11,26 +11,24 @@ namespace App\Tests\Controller\Api;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-
 class UserControllerTest extends WebTestCase
 {
-
     public function testRegistrationAction()
     {
-
         $client = static::createClient();
         $data = [
             'password'=>'123456',
             'email'=>time().'@ukr.net'
             ];
-        $client->request('POST', '/registration',
+        $client->request(
+            'POST',
+            '/registration',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($data)
         );
         $this->assertContains($data['email'], $client->getResponse()->getContent());
-
     }
 
     public function testAuthorizeAction()
@@ -40,7 +38,9 @@ class UserControllerTest extends WebTestCase
             'password'=>'123456',
             'email'=>'email@gmail.com'
         ];
-        $client->request('POST', '/login',
+        $client->request(
+            'POST',
+            '/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],

@@ -28,7 +28,7 @@ class LabelController extends AbstractController
         if (!$content = $request->getContent()) {
             throw new JsonHttpException(400, 'Bad Request');
         }
-        $label = $serializer->deserialize($content,Label::class,'json');
+        $label = $serializer->deserialize($content, Label::class, 'json');
         $errors = $validator->validate($label);
         if (count($errors)) {
             throw new JsonHttpException(400, 'Bad Request');
@@ -46,13 +46,12 @@ class LabelController extends AbstractController
     public function deleteAction(Label $label)
     {
         $user = $this->getUser();
-        if(in_array("ROLE_ADMIN",$user->getRoles()))
-        {
+        if (in_array("ROLE_ADMIN", $user->getRoles())) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($label);
             $em->flush();
 
-            return new JsonResponse(null,200);
+            return new JsonResponse(null, 200);
         }
 
         throw new JsonHttpException(400, 'Bad Request');
@@ -67,8 +66,8 @@ class LabelController extends AbstractController
             throw new JsonHttpException(400, 'Bad Request');
         }
         $user = $this->getUser();
-        if(in_array("ROLE_ADMIN",$user->getRoles())){
-            $data = json_decode($content,true);
+        if (in_array("ROLE_ADMIN", $user->getRoles())) {
+            $data = json_decode($content, true);
             $label->setName($data['name']);
             $em = $this->getDoctrine()->getManager();
             $em->persist($label);
@@ -85,8 +84,7 @@ class LabelController extends AbstractController
      */
     public function addCheckListAction(Label $label, CheckList $checkList)
     {
-
-        if($label->getChecklists()->contains($checkList)) {
+        if ($label->getChecklists()->contains($checkList)) {
             throw new JsonHttpException(400, 'Bad Request');
         }
         $label->addChecklist($checkList);
@@ -102,7 +100,7 @@ class LabelController extends AbstractController
      */
     public function removeCheckListAction(Label $label, CheckList $checkList)
     {
-        if($label->getChecklists()->contains($checkList)){
+        if ($label->getChecklists()->contains($checkList)) {
             $label->removeChecklist($checkList);
             $em = $this->getDoctrine()->getManager();
             $em->persist($label);

@@ -37,7 +37,9 @@ class LabelControllerTest extends WebTestCase
         $data = [
             'name' => 'My Label',
         ];
-        $client->request('POST', '/api/label',
+        $client->request(
+            'POST',
+            '/api/label',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -46,7 +48,6 @@ class LabelControllerTest extends WebTestCase
             json_encode($data)
         );
         $this->assertContains($data['name'], $client->getResponse()->getContent());
-
     }
 
     public function testEditAction()
@@ -56,7 +57,9 @@ class LabelControllerTest extends WebTestCase
         $data = [
             'name' => 'My Label New',
         ];
-        $client->request('PUT', '/api/label/'.$labelId,
+        $client->request(
+            'PUT',
+            '/api/label/'.$labelId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -65,7 +68,6 @@ class LabelControllerTest extends WebTestCase
             json_encode($data)
         );
         $this->assertContains($data['name'], $client->getResponse()->getContent());
-
     }
 
     public function testAddCheckListAction()
@@ -73,7 +75,9 @@ class LabelControllerTest extends WebTestCase
         $listId = $this->entityManager->getRepository(CheckList::class)->findOneBy(['name' => 'List Name'])->getId();
         $labelId = $this->entityManager->getRepository(Label::class)->findOneBy(['name' => 'My Label New'])->getId();
         $client = static::createClient();
-        $client->request('POST', '/api/label/'.$labelId.'/checklist/'.$listId,
+        $client->request(
+            'POST',
+            '/api/label/'.$labelId.'/checklist/'.$listId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -88,7 +92,9 @@ class LabelControllerTest extends WebTestCase
         $listId = $this->entityManager->getRepository(CheckList::class)->findOneBy(['name' => 'List Name'])->getId();
         $labelId = $this->entityManager->getRepository(Label::class)->findOneBy(['name' => 'My Label New'])->getId();
         $client = static::createClient();
-        $client->request('DELETE', '/api/label/'.$labelId.'/checklist/'.$listId,
+        $client->request(
+            'DELETE',
+            '/api/label/'.$labelId.'/checklist/'.$listId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -96,7 +102,6 @@ class LabelControllerTest extends WebTestCase
             ]
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-
     }
 
     public function testDeleteAction()
@@ -106,7 +111,9 @@ class LabelControllerTest extends WebTestCase
         $data = [
             'name' => 'My Label New',
         ];
-        $client->request('DELETE', '/api/label/'.$labelId,
+        $client->request(
+            'DELETE',
+            '/api/label/'.$labelId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -115,6 +122,5 @@ class LabelControllerTest extends WebTestCase
             json_encode($data)
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-
     }
 }
