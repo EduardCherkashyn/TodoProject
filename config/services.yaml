@@ -28,3 +28,6 @@ services:
     App\Listener\JsonExceptionListener:
             tags:
                 - { name: 'kernel.event_listener', event: 'kernel.exception', method: 'onKernelException' }
+    App\Services\StripeService:
+            arguments:
+                $stripeSecretKey : '%env(STRIPE_SECRET_KEY)%'

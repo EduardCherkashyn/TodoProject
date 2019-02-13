@@ -9,6 +9,8 @@
         "doctrine/annotations": "^1.6",
         "ramsey/uuid": "^3.8",
         "sensio/framework-extra-bundle": "^5.2",
+        "shapecode/cron-bundle": "^3.2",
+        "stripe/stripe-php": "^6.29",
         "symfony/console": "4.2.*",
         "symfony/dotenv": "4.2.*",
         "symfony/flex": "^1.1",

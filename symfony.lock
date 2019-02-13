@@ -95,6 +95,9 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "mtdowling/cron-expression": {
+        "version": "v1.2.1"
+    },
     "nelmio/cors-bundle": {
         "version": "1.5",
         "recipe": {
@@ -145,6 +148,12 @@
             "version": "5.2",
             "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
         }
+    },
+    "shapecode/cron-bundle": {
+        "version": "3.2.3"
+    },
+    "stripe/stripe-php": {
+        "version": "v6.29.3"
     },
     "swiftmailer/swiftmailer": {
         "version": "v6.1.3"

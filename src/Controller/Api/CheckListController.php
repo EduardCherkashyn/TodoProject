@@ -19,6 +19,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class CheckListController extends AbstractController
 {
     /**
+     * @Route("/api/checklist", methods={"GET"})
+     */
+    public function getAllAction()
+    {
+        $user = $this->getUser();
+
+        return ($this->json($user->getCheckLists()));
+    }
+
+    /**
      * @Route("/api/checklist", methods={"POST"})
      */
     public function createAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator)

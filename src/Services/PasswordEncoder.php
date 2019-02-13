@@ -9,7 +9,6 @@
 namespace App\Services;
 
 use App\Entity\User;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PasswordEncoder
@@ -26,13 +25,8 @@ class PasswordEncoder
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function index(User $user)
+    public function encode(User $user)
     {
         $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
-        try {
-            $uuid = Uuid::uuid4();
-        } catch (\Exception $e) {
-        }
-        $user->setApiToken($uuid->toString());
     }
 }

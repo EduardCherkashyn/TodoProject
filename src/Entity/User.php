@@ -42,7 +42,7 @@ class User implements UserInterface, \JsonSerializable
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $apiToken;
 
@@ -52,9 +52,20 @@ class User implements UserInterface, \JsonSerializable
      */
     private $checkLists;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
+     */
+    private $stripeCustomerId;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Invoice", mappedBy="user")
+     */
+    private $invoices;
+
     public function __construct()
     {
         $this->checkLists = new ArrayCollection();
+        $this->invoices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -153,7 +164,8 @@ class User implements UserInterface, \JsonSerializable
             'id' => $this->getId(),
             'email' => $this->getEmail(),
             'apiToken' => $this->getApiToken(),
-            'checkLists' => $this->getCheckLists()
+            'checkLists' => $this->getCheckLists(),
+            'invoices' => $this->getInvoices()
         ];
     }
 
@@ -182,6 +194,53 @@ class User implements UserInterface, \JsonSerializable
             // set the owning side to null (unless already changed)
             if ($checkList->getUser() === $this) {
                 $checkList->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStripeCustomerId()
+    {
+        return $this->stripeCustomerId;
+    }
+
+    /**
+     * @param mixed $stripeCustomerId
+     */
+    public function setStripeCustomerId($stripeCustomerId): void
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+    }
+
+    /**
+     * @return Collection|Invoice[]
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
+
+    public function addInvoice(Invoice $invoice): self
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices[] = $invoice;
+            $invoice->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoice(Invoice $invoice): self
+    {
+        if ($this->invoices->contains($invoice)) {
+            $this->invoices->removeElement($invoice);
+            // set the owning side to null (unless already changed)
+            if ($invoice->getUser() === $this) {
+                $invoice->setUser(null);
             }
         }
 

@@ -23,13 +23,13 @@ class AppFixtures extends Fixture
         $user = new User();
         $user->setPassword('123456');
         $user->setRoles(['ROLE_ADMIN']);
-        $this->passwordEncoder->index($user);
-        $user->setEmail('email@gmail.com');
+        $this->passwordEncoder->encode($user);
+        $user->setEmail('1email@gmail.com');
         $user->setApiToken('my-api-token');
 
         $list = new CheckList();
         $list->setName('List Name');
-        $list->setExpire('2020-11-20');
+        $list->setExpire('2019-02-01');
 
         $item = new Item();
         $item->setChecked(true);
@@ -37,6 +37,18 @@ class AppFixtures extends Fixture
 
         $user->addCheckList($list);
         $manager->persist($user);
+        $manager->flush();
+
+        for ($i = 1; $i <= 5; ++$i) {
+            $user = new User();
+            $user
+                ->setEmail('user'.$i.'@dummymail.com')
+                ->setPassword('somePassword')
+                ->setApiToken('my-api-token'.$i);
+            $this->passwordEncoder->encode($user);
+            ;
+            $manager->persist($user);
+        }
         $manager->flush();
     }
 }
