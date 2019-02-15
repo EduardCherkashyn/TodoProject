@@ -27,17 +27,21 @@ class ItemController extends AbstractController
         if (!$content = $request->getContent()) {
             throw new JsonHttpException(400, 'Bad Request');
         }
+        $data = json_decode($content, true);
+        if (!isset($data['checked'])) {
+            throw new JsonHttpException(400, 'Bad Request');
+        }
         $item = $serializer->deserialize($request->getContent(), Item::class, 'json');
         $errors = $validator->validate($item);
         if (count($errors)) {
-            throw new JsonHttpException(400, 'Bad Request');
+            throw new JsonHttpException(400, 'Not Valid');
         }
         $checkList->addItem($item);
         $em = $this->getDoctrine()->getManager();
         $em->persist($checkList);
         $em->flush();
 
-        return ($this->json($item));
+        return $this->json($item);
     }
 
     /**
@@ -47,17 +51,18 @@ class ItemController extends AbstractController
     {
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if (isset($checkList, $userLists)) {
-            $items = $checkList->getItems();
-            if (isset($item, $items)) {
-                $em = $this->getDoctrine()->getManager();
-                $em->remove($item);
-                $em->flush();
-
-                return ($this->json(null, 200));
-            }
+        if (!$userLists->contains($checkList)) {
+            throw new JsonHttpException(400, 'You are not the owner of this list');
         }
-        throw new JsonHttpException(400, 'Bad Request');
+        $items = $checkList->getItems();
+        if (!$items->contains($item)) {
+            throw new JsonHttpException(400, 'This Item does not belong to this list');
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($item);
+        $em->flush();
+
+        return $this->json(null, 200);
     }
 
     /**
@@ -67,22 +72,22 @@ class ItemController extends AbstractController
     {
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if (isset($checkList, $userLists)) {
-            $items = $checkList->getItems();
-            if ($items->contains($item)) {
-                if ($item->getChecked()) {
-                    $item->setChecked(false);
-                } else {
-                    $item->setChecked(true);
-                }
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($item);
-                $em->flush();
-
-                return ($this->json($item));
-            }
+        if (!$userLists->contains($checkList)) {
+            throw new JsonHttpException(400, 'You are not the owner of this list');
         }
+        $items = $checkList->getItems();
+        if (!$items->contains($item)) {
+            throw new JsonHttpException(400, 'This Item does not belong to this list');
+        }
+        if ($item->getChecked()) {
+            $item->setChecked(false);
+        } else {
+            $item->setChecked(true);
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($item);
+        $em->flush();
 
-        throw new JsonHttpException(400, 'Bad Request');
+        return $this->json($item);
     }
 }

@@ -9,7 +9,6 @@
 namespace App\Controller\Api;
 
 use App\Entity\Attachment;
-use App\Entity\CheckList;
 use App\Entity\Item;
 use App\Exception\JsonHttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,54 +20,44 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class AttachmentController extends AbstractController
 {
     /**
-     * @Route("/api/list/{checkList}/item/{item}/attachment", methods={"POST"})
+     * @Route("/api/item/{item}/attachment", methods={"POST"})
      */
-    public function addAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, CheckList $checkList, Item $item)
+    public function addAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, Item $item)
     {
-        $user = $this->getUser();
-        $userLists = $user->getCheckLists();
-        if (isset($checkList, $userLists)) {
-            $items = $checkList->getItems();
-            if (isset($item, $items)) {
-                $attachment = $serializer->deserialize($request->getContent(), Attachment::class, 'json');
-                $errors = $validator->validate($attachment);
-                if (count($errors)) {
-                    throw new JsonHttpException(400, 'Bad Request');
-                }
-                $item->setAttachment($attachment);
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($item);
-                $em->flush();
-
-                return ($this->json($item));
-            }
+        if (!$content = $request->getContent()) {
+            throw new JsonHttpException(400, 'Bad Request');
         }
+        $data = json_decode($content, true);
+        if (!isset($data['text'])) {
+            throw new JsonHttpException(400, 'Bad Request');
+        }
+        $attachment = $serializer->deserialize($content, Attachment::class, 'json');
+        $errors = $validator->validate($attachment);
+        if (count($errors)) {
+            throw new JsonHttpException(400, 'Bad Request');
+        }
+        $item->setAttachment($attachment);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($item);
+        $em->flush();
 
-        throw new JsonHttpException(400, 'Bad Request');
+        return $this->json($item);
     }
 
     /**
-     * @Route("/api/list/{checkList}/item/{item}/attachment/{attachment}", methods={"DELETE"})
+     * @Route("/api/item/{item}/attachment/{attachment}", methods={"DELETE"})
      */
-    public function removeAction(CheckList $checkList, Item $item, Attachment $attachment)
+    public function removeAction(Item $item, Attachment $attachment)
     {
-        $user = $this->getUser();
-        $userLists = $user->getCheckLists();
-        if (isset($checkList, $userLists)) {
-            $items = $checkList->getItems();
-            if (isset($item, $items)) {
-                if ($attachment === $item->getAttachment()) {
-                    $item->setAttachment(null);
-                    $em = $this->getDoctrine()->getManager();
-                    $em->remove($attachment);
-                    $em->persist($item);
-                    $em->flush();
-
-                    return ($this->json($user));
-                }
-            }
+        if (!$attachment === $item->getAttachment()) {
+            throw new JsonHttpException(400, 'Bad Request');
         }
+        $item->setAttachment(null);
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($attachment);
+        $em->persist($item);
+        $em->flush();
 
-        throw new JsonHttpException(400, 'Bad Request');
+        return $this->json(null, 200);
     }
 }

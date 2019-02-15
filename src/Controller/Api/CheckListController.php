@@ -40,14 +40,14 @@ class CheckListController extends AbstractController
         $checklist = $serializer->deserialize($content, CheckList::class, 'json');
         $errors = $validator->validate($checklist);
         if (count($errors)) {
-            throw new JsonHttpException(400, 'Bad Request');
+            throw new JsonHttpException(400, 'Not Valid');
         }
         $user->addCheckList($checklist);
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
         $em->flush();
 
-        return ($this->json($checklist));
+        return $this->json($checklist);
     }
 
     /**
@@ -57,15 +57,14 @@ class CheckListController extends AbstractController
     {
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if (isset($checkList, $userLists)) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($checkList);
-            $em->flush();
-
-            return ($this->json($checkList));
+        if (!$userLists->contains($checkList)) {
+            throw new JsonHttpException(404, 'You are not the owner of current resource');
         }
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($checkList);
+        $em->flush();
 
-        throw new JsonHttpException(400, 'Bad Request');
+        return $this->json($checkList);
     }
 
     /**
@@ -78,22 +77,20 @@ class CheckListController extends AbstractController
         }
         $user = $this->getUser();
         $userLists = $user->getCheckLists();
-        if (isset($checkList, $userLists)) {
-            $data = json_decode($content, true);
-            $checkList->setName($data['name']);
-            $checkList->setExpire($data['expire']);
-            $errors = $validator->validate($checkList);
-            if (count($errors)) {
-                throw new JsonHttpException(400, 'Bad Request');
-            }
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($checkList);
-            $em->flush();
-
-            return ($this->json($checkList));
+        if (!$userLists->contains($checkList)) {
+            throw new JsonHttpException(400, 'You are not the owner of current resource');
         }
+        $data = json_decode($content, true);
+        $checkList->setName($data['name']);
+        $checkList->setExpire($data['expire']);
+        $errors = $validator->validate($checkList);
+        if (count($errors)) {
+            throw new JsonHttpException(400, 'Not Valid');
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($checkList);
+        $em->flush();
 
-        throw new JsonHttpException(400, 'Bad Request');
+        return $this->json($checkList);
     }
 }

@@ -50,6 +50,84 @@ class LabelControllerTest extends WebTestCase
         $this->assertContains($data['name'], $client->getResponse()->getContent());
     }
 
+    public function testCreateUnAuthorizedAction()
+    {
+        $client = static::createClient();
+        $data = [
+            'name' => 'My Label',
+        ];
+        $client->request(
+            'POST',
+            '/api/label',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json',
+                'HTTP_X-API_KEY' => ''
+            ],
+            json_encode($data)
+        );
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+    }
+
+    public function testCreateInvalidAction()
+    {
+        $client = static::createClient();
+        $data = [
+            'name121212' => 'My Label',
+        ];
+        $client->request(
+            'POST',
+            '/api/label',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json',
+                'HTTP_X-API_KEY' => 'my-api-token'
+            ],
+            json_encode($data)
+        );
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testEditUnAuthorizedAction()
+    {
+        $labelId = $this->entityManager->getRepository(Label::class)->findOneBy(['name' => 'My Label'])->getId();
+        $client = static::createClient();
+        $data = [
+            'name' => 'My Label New',
+        ];
+        $client->request(
+            'PUT',
+            '/api/label/'.$labelId,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json',
+                'HTTP_X-API_KEY' => ''
+            ],
+            json_encode($data)
+        );
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+    }
+
+    public function testEditInvalidAction()
+    {
+        $labelId = $this->entityManager->getRepository(Label::class)->findOneBy(['name' => 'My Label'])->getId();
+        $client = static::createClient();
+        $data = [
+            'nameqqwqwqw' => 'My Label New',
+        ];
+        $client->request(
+            'PUT',
+            '/api/label/'.$labelId,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json',
+                'HTTP_X-API_KEY' => 'my-api-token'
+            ],
+            json_encode($data)
+        );
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
     public function testEditAction()
     {
         $labelId = $this->entityManager->getRepository(Label::class)->findOneBy(['name' => 'My Label'])->getId();
@@ -69,6 +147,8 @@ class LabelControllerTest extends WebTestCase
         );
         $this->assertContains($data['name'], $client->getResponse()->getContent());
     }
+
+
 
     public function testAddCheckListAction()
     {

@@ -72,7 +72,7 @@ class UserController extends AbstractController
         $em->persist($user);
         $em->flush();
 
-        return ($this->json($user));
+        return $this->json($user);
     }
 
     /**
@@ -85,16 +85,16 @@ class UserController extends AbstractController
         }
         $data = json_decode($content, true);
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email'=>$data['email']]);
-        if ($user instanceof User) {
-            if ($passwordEncoder->isPasswordValid($user, $data['password'])) {
-                if (count($user->getCheckLists())>0) {
-                    $listIfExpire->check($user);
-                }
-                return ($this->json($user));
-            }
+        if (!$user instanceof User || !$passwordEncoder->isPasswordValid($user, $data['password'])) {
+            throw new JsonHttpException(404, 'Bad Request');
         }
-        throw new JsonHttpException(400, 'Bad Request');
+        if (count($user->getCheckLists())>0 && $user->getStripeCustomerId()!=null) {
+            $listIfExpire->checkUser($user);
+        }
+
+        return $this->json($user);
     }
+
 
     /**
      * @Route("/api/user/card", methods={"POST"})

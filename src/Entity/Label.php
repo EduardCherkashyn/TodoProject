@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\LabelRepository")
  */
-class Label
+class Label implements \JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -77,5 +77,13 @@ class Label
         }
 
         return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName()
+        ];
     }
 }

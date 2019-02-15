@@ -24,12 +24,12 @@ class AppFixtures extends Fixture
         $user->setPassword('123456');
         $user->setRoles(['ROLE_ADMIN']);
         $this->passwordEncoder->encode($user);
-        $user->setEmail('1email@gmail.com');
+        $user->setEmail('email@gmail.com');
         $user->setApiToken('my-api-token');
 
         $list = new CheckList();
         $list->setName('List Name');
-        $list->setExpire('2019-02-01');
+        $list->setExpire(new \DateTime('2019-02-01'));
 
         $item = new Item();
         $item->setChecked(true);

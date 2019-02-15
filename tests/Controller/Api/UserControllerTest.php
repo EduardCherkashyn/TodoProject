@@ -31,6 +31,43 @@ class UserControllerTest extends WebTestCase
         $this->assertContains($data['email'], $client->getResponse()->getContent());
     }
 
+    public function testRegistrationBadRequestAction()
+    {
+        $client = static::createClient();
+        $data = [
+            'password'=>'12',
+            'email'=>time().'@ukr.net'
+        ];
+        $client->request(
+            'POST',
+            '/registration',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testAuthorizeBadRequestAction()
+    {
+        $client = static::createClient();
+        $data = [
+            'password'=>'11111',
+            'email'=>'edik@111.mail.com'
+        ];
+        $client->request(
+            'POST',
+            '/login',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+
+    }
+
     public function testAuthorizeAction()
     {
         $client = static::createClient();
@@ -46,14 +83,7 @@ class UserControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($data)
         );
-        $kernel = self::bootKernel();
-        $em = $kernel->getContainer()
-            ->get('doctrine')
-            ->getManager();
-        /**
-         * @var User $user
-         */
-        $user = $em->getRepository(User::class)->findOneBy(['email'=>$data['email']]);
-        $this->assertContains($user->getApiToken(), $client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
     }
 }

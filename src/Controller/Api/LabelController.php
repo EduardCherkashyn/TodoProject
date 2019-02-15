@@ -28,6 +28,10 @@ class LabelController extends AbstractController
         if (!$content = $request->getContent()) {
             throw new JsonHttpException(400, 'Bad Request');
         }
+        $data = json_decode($content, true);
+        if (!isset($data['name'])) {
+            throw new JsonHttpException(400, 'Bad Request');
+        }
         $label = $serializer->deserialize($content, Label::class, 'json');
         $errors = $validator->validate($label);
         if (count($errors)) {
@@ -37,7 +41,7 @@ class LabelController extends AbstractController
         $em->persist($label);
         $em->flush();
 
-        return ($this->json($label));
+        return $this->json($label);
     }
 
     /**
@@ -45,16 +49,14 @@ class LabelController extends AbstractController
      */
     public function deleteAction(Label $label)
     {
-        $user = $this->getUser();
-        if (in_array("ROLE_ADMIN", $user->getRoles())) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($label);
-            $em->flush();
-
-            return new JsonResponse(null, 200);
+        if (!$label instanceof Label) {
+            throw new JsonHttpException(400, 'Bad Request');
         }
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($label);
+        $em->flush();
 
-        throw new JsonHttpException(400, 'Bad Request');
+        return new JsonResponse(null, 200);
     }
 
     /**
@@ -65,18 +67,16 @@ class LabelController extends AbstractController
         if (!$content = $request->getContent()) {
             throw new JsonHttpException(400, 'Bad Request');
         }
-        $user = $this->getUser();
-        if (in_array("ROLE_ADMIN", $user->getRoles())) {
-            $data = json_decode($content, true);
-            $label->setName($data['name']);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($label);
-            $em->flush();
-
-            return ($this->json($label));
+        $data = json_decode($content, true);
+        if (!isset($data['name'])) {
+            throw new JsonHttpException(400, 'Bad Request');
         }
+        $label->setName($data['name']);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($label);
+        $em->flush();
 
-        throw new JsonHttpException(400, 'Bad Request');
+        return $this->json($label);
     }
 
     /**
@@ -92,7 +92,7 @@ class LabelController extends AbstractController
         $em->persist($label);
         $em->flush();
 
-        return ($this->json($label));
+        return $this->json($label);
     }
 
     /**
@@ -106,6 +106,6 @@ class LabelController extends AbstractController
             $em->persist($label);
             $em->flush();
         }
-        return ($this->json($label));
+        return $this->json($label);
     }
 }

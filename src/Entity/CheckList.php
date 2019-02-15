@@ -40,8 +40,8 @@ class CheckList implements \JsonSerializable
     private $items;
 
     /**
-     * @Assert\Date()
-     * @ORM\Column(type="string")
+     * @Assert\DateTime()
+     * @ORM\Column(type="datetime")
      */
     private $expire;
 
@@ -127,12 +127,12 @@ class CheckList implements \JsonSerializable
         return $this;
     }
 
-    public function getExpire(): string
+    public function getExpire(): \DateTime
     {
         return $this->expire;
     }
 
-    public function setExpire(string $expire): self
+    public function setExpire(\DateTime $expire): self
     {
         $this->expire = $expire;
 

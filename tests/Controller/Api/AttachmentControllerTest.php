@@ -40,7 +40,7 @@ class AttachmentControllerTest extends WebTestCase
         ];
         $client->request(
             'POST',
-            '/api/list/'.$list->getId().'/item/'.$item->getId().'/attachment',
+            '/api/item/'.$item->getId().'/attachment',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
@@ -51,6 +51,66 @@ class AttachmentControllerTest extends WebTestCase
         $this->assertContains($data['text'], $client->getResponse()->getContent());
     }
 
+    public function testAddUnAuthorizedAction()
+    {
+        $list = $this->entityManager->getRepository(CheckList::class)->findOneBy(['name' => 'List Name']);
+        $item = $list->getItems()->last();
+        $client = static::createClient();
+        $data = [
+            'text' => 'My Text',
+        ];
+        $client->request(
+            'POST',
+            '/api/item/'.$item->getId().'/attachment',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json',
+                'HTTP_X-API_KEY' => ''
+            ],
+            json_encode($data)
+        );
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+    }
+
+    public function testAddInvaledAction()
+    {
+        $list = $this->entityManager->getRepository(CheckList::class)->findOneBy(['name' => 'List Name']);
+        $item = $list->getItems()->last();
+        $client = static::createClient();
+        $data = [
+            'text121212' => 'My Text',
+        ];
+        $client->request(
+            'POST',
+            '/api/item/'.$item->getId().'/attachment',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json',
+                'HTTP_X-API_KEY' => 'my-api-token'
+            ],
+            json_encode($data)
+        );
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testRemoveUnAuthorizedAction()
+    {
+        $list = $this->entityManager->getRepository(CheckList::class)->findOneBy(['name' => 'List Name']);
+        $item = $list->getItems()->last();
+        $attachment = $item->getAttachment();
+        $client = static::createClient();
+        $client->request(
+            'DELETE',
+            '/api/item/'.$item->getId().'/attachment/'.$attachment->getId(),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json',
+                'HTTP_X-API_KEY' => ''
+            ]
+        );
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+    }
+
     public function testRemoveAction()
     {
         $list = $this->entityManager->getRepository(CheckList::class)->findOneBy(['name' => 'List Name']);
@@ -59,13 +119,13 @@ class AttachmentControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'DELETE',
-            '/api/list/'.$list->getId().'/item/'.$item->getId().'/attachment/'.$attachment->getId(),
+            '/api/item/'.$item->getId().'/attachment/'.$attachment->getId(),
             [],
             [],
             ['CONTENT_TYPE' => 'application/json',
                 'HTTP_X-API_KEY' => 'my-api-token'
             ]
         );
-        $this->assertContains('email@gmail.com', $client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }

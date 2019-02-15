@@ -164,8 +164,7 @@ class User implements UserInterface, \JsonSerializable
             'id' => $this->getId(),
             'email' => $this->getEmail(),
             'apiToken' => $this->getApiToken(),
-            'checkLists' => $this->getCheckLists(),
-            'invoices' => $this->getInvoices()
+            'checkLists' => $this->getCheckLists()
         ];
     }
 
