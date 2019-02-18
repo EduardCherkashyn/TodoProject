@@ -9,7 +9,9 @@
 namespace App\Controller\Api;
 
 use App\Entity\CheckList;
+use App\Entity\User;
 use App\Exception\JsonHttpException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,6 +39,12 @@ class CheckListController extends AbstractController
             throw new JsonHttpException(400, 'Bad Request');
         }
         $user = $this->getUser();
+        $data = json_decode($content, true);
+        try {
+            new \DateTime($data['expire']);
+        } catch (Exception $e) {
+            throw new JsonHttpException(400, 'Not Valid');
+        }
         $checklist = $serializer->deserialize($content, CheckList::class, 'json');
         $errors = $validator->validate($checklist);
         if (count($errors)) {
@@ -55,16 +63,20 @@ class CheckListController extends AbstractController
      */
     public function deleteAction(CheckList $checkList)
     {
+        /**
+         * @var User $user
+         */
         $user = $this->getUser();
-        $userLists = $user->getCheckLists();
-        if (!$userLists->contains($checkList)) {
+        $checkLists = $user->getCheckLists();
+        if (!$checkLists->contains($checkList)) {
             throw new JsonHttpException(404, 'You are not the owner of current resource');
         }
         $em = $this->getDoctrine()->getManager();
-        $em->remove($checkList);
+        $user->removeCheckList($checkList);
+        $em->persist($user);
         $em->flush();
 
-        return $this->json($checkList);
+        return $this->json(null,200);
     }
 
     /**
@@ -81,8 +93,13 @@ class CheckListController extends AbstractController
             throw new JsonHttpException(400, 'You are not the owner of current resource');
         }
         $data = json_decode($content, true);
+        try {
+           $date =  new \DateTime($data['expire']);
+        } catch (Exception $e) {
+            throw new JsonHttpException(400, 'Not Valid date');
+        }
         $checkList->setName($data['name']);
-        $checkList->setExpire($data['expire']);
+        $checkList->setExpire($date);
         $errors = $validator->validate($checkList);
         if (count($errors)) {
             throw new JsonHttpException(400, 'Not Valid');

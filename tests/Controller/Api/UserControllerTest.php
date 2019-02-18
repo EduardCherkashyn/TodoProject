@@ -8,19 +8,22 @@
 
 namespace App\Tests\Controller\Api;
 
-use App\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\AbstractTest;
 
-class UserControllerTest extends WebTestCase
+
+class UserControllerTest extends AbstractTest
 {
-    public function testRegistrationAction()
+    /**
+     * @test
+     * @dataProvider userData
+     */
+    public function testRegistrationAction($a, $b, $expected): void
     {
-        $client = static::createClient();
         $data = [
-            'password'=>'123456',
-            'email'=>time().'@ukr.net'
+            'password'=> $a,
+            'email'=> $b
             ];
-        $client->request(
+        $this->client->request(
             'POST',
             '/registration',
             [],
@@ -28,35 +31,30 @@ class UserControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($data)
         );
-        $this->assertContains($data['email'], $client->getResponse()->getContent());
+        $this->assertEquals($expected, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testRegistrationBadRequestAction()
+    public function userData()
     {
-        $client = static::createClient();
-        $data = [
-            'password'=>'12',
-            'email'=>time().'@ukr.net'
+        return [
+             ['123456', 'edik22@ukr.net', 200],
+             ['1111', 'ed@ukr.net', 400],
+             ['222222222222222', 'ededdedededede@ilr.met', 400],
+             ['', '', 400]
         ];
-        $client->request(
-            'POST',
-            '/registration',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($data)
-        );
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
-    public function testAuthorizeBadRequestAction()
+    /**
+     * @dataProvider userDataLogin
+     * @test
+     */
+    public function testAuthorizeAction($a, $b, $expected) :void
     {
-        $client = static::createClient();
         $data = [
-            'password'=>'11111',
-            'email'=>'edik@111.mail.com'
+            'password'=> $a,
+            'email'=> $b
         ];
-        $client->request(
+        $this->client->request(
             'POST',
             '/login',
             [],
@@ -64,26 +62,16 @@ class UserControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($data)
         );
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-
+        $this->assertEquals($expected, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testAuthorizeAction()
+    public function userDataLogin()
     {
-        $client = static::createClient();
-        $data = [
-            'password'=>'123456',
-            'email'=>'email@gmail.com'
+        return [
+            ['123456', 'email@gmail.com', 200],
+            ['1111', 'ed@ukr.net', 404],
+            ['222222222222222', 'ededdedededede@ilr.met', 404],
+            ['', '', 404]
         ];
-        $client->request(
-            'POST',
-            '/login',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($data)
-        );
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-
     }
 }

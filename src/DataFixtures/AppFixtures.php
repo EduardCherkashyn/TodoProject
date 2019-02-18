@@ -39,16 +39,5 @@ class AppFixtures extends Fixture
         $manager->persist($user);
         $manager->flush();
 
-        for ($i = 1; $i <= 5; ++$i) {
-            $user = new User();
-            $user
-                ->setEmail('user'.$i.'@dummymail.com')
-                ->setPassword('somePassword')
-                ->setApiToken('my-api-token'.$i);
-            $this->passwordEncoder->encode($user);
-            ;
-            $manager->persist($user);
-        }
-        $manager->flush();
     }
 }

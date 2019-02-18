@@ -23,7 +23,6 @@ class CheckList implements \JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="checkLists")
-     * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 
@@ -40,6 +39,7 @@ class CheckList implements \JsonSerializable
     private $items;
 
     /**
+     * @var string A "Y-m-d H:i:s" formatted value
      * @Assert\DateTime()
      * @ORM\Column(type="datetime")
      */

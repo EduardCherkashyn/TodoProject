@@ -46,8 +46,8 @@ class CheckListExpiration extends Command
         $checkLists = $this->em->getRepository(CheckList::class)->findAll();
 
         foreach ($checkLists as $checkList) {
-            $date = date($checkList->getExpire());
-            if (date("Y-m-d", strtotime($date. ' + 1 day'))<= date("Y-m-d")) {
+            $date = new \DateTime($checkList->getExpire());
+            if ($date->modify('+1 day')<= new \DateTime('now')) {
                 $this->mailer->checkListExpirationOneDayPrior($checkList->getUser(), $checkList);
             }
         }
