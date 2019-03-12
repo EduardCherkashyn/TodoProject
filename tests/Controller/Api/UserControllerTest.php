@@ -37,7 +37,7 @@ class UserControllerTest extends AbstractTest
     public function userData()
     {
         return [
-             ['123456', 'edik22@ukr.net', 200],
+             'Valid data'=>['123456', 'edik22@ukr.net', 200],
              ['1111', 'ed@ukr.net', 400],
              ['222222222222222', 'ededdedededede@ilr.met', 400],
              ['', '', 400]

@@ -40,7 +40,7 @@ class CheckList implements \JsonSerializable
 
     /**
      * @var string A "Y-m-d H:i:s" formatted value
-     * @Assert\DateTime()
+     * @Assert\Type()
      * @ORM\Column(type="datetime")
      */
     private $expire;
